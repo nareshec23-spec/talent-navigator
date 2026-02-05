@@ -1,5 +1,5 @@
  import { motion } from 'framer-motion';
- import { MapPin, Clock, DollarSign, Briefcase } from 'lucide-react';
+import { MapPin, Clock, DollarSign, Briefcase, Trash2 } from 'lucide-react';
  import { Card, CardContent, CardHeader } from '@/components/ui/card';
  import { Button } from '@/components/ui/button';
  import { Badge } from '@/components/ui/badge';
@@ -23,8 +23,10 @@
    };
    onApply?: () => void;
    onView?: () => void;
+  onDelete?: () => void;
    showApply?: boolean;
    showStatus?: boolean;
+  showDelete?: boolean;
    applicationStatus?: string;
  }
  
@@ -43,8 +45,8 @@
    return `Up to ₹${(max! / 100000).toFixed(1)}L`;
  };
  
- export function JobCard({ job, onApply, onView, showApply = true, showStatus = false, applicationStatus }: JobCardProps) {
-   const salary = formatSalary(job.salary_min, job.salary_max);
+export function JobCard({ job, onApply, onView, onDelete, showApply = true, showStatus = false, showDelete = false, applicationStatus }: JobCardProps) {
+  const salary = formatSalary(job.salary_min, job.salary_max);
  
    return (
      <motion.div
@@ -69,11 +71,26 @@
                  </span>
                </div>
              </div>
-             {showStatus && applicationStatus && (
-               <StatusBadge variant={applicationStatus as any}>
-                 {applicationStatus.charAt(0).toUpperCase() + applicationStatus.slice(1)}
-               </StatusBadge>
-             )}
+            <div className="flex items-center gap-2">
+              {showDelete && (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete?.();
+                  }}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
+              {showStatus && applicationStatus && (
+                <StatusBadge variant={applicationStatus as any}>
+                  {applicationStatus.charAt(0).toUpperCase() + applicationStatus.slice(1)}
+                </StatusBadge>
+              )}
+            </div>
            </div>
          </CardHeader>
          <CardContent className="pt-0">
