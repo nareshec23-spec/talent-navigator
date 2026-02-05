@@ -10,6 +10,37 @@
  import { useAuth } from '@/hooks/useAuth';
  import { useToast } from '@/hooks/use-toast';
  
+ const sendCandidateEmail = async (
+   candidateEmail: string,
+   candidateName: string,
+   jobTitle: string,
+   status: 'shortlisted' | 'hired' | 'rejected',
+   companyName?: string
+ ) => {
+   try {
+     const { data, error } = await supabase.functions.invoke('send-candidate-email', {
+       body: {
+         candidateEmail,
+         candidateName,
+         jobTitle,
+         status,
+         companyName: companyName || 'Our Company',
+       },
+     });
+ 
+     if (error) {
+       console.error('Error sending email:', error);
+       return { error: error.message };
+     }
+ 
+     console.log('Email sent successfully:', data);
+     return { data };
+   } catch (error: any) {
+     console.error('Error invoking email function:', error);
+     return { error: error.message };
+   }
+ };
+ 
  interface Application {
    id: string;
    job_id: string;
@@ -103,7 +134,11 @@
  
   type ApplicationStatus = 'applied' | 'reviewing' | 'shortlisted' | 'rejected' | 'hired';
   
-  const updateApplicationStatus = async (applicationId: string, newStatus: ApplicationStatus) => {
+ const updateApplicationStatus = async (
+   applicationId: string, 
+   newStatus: ApplicationStatus,
+   candidateInfo?: { email: string; name: string; jobTitle: string }
+ ) => {
      try {
        const { error } = await supabase
          .from('applications')
@@ -111,6 +146,21 @@
          .eq('id', applicationId);
  
        if (error) throw error;
+ 
+       // Send email notification for status changes
+       if (['shortlisted', 'hired', 'rejected'].includes(newStatus) && candidateInfo) {
+         const emailResult = await sendCandidateEmail(
+           candidateInfo.email,
+           candidateInfo.name,
+           candidateInfo.jobTitle,
+           newStatus as 'shortlisted' | 'hired' | 'rejected',
+           profile?.company_name || undefined
+         );
+         
+         if (emailResult.error) {
+           console.error('Failed to send email notification:', emailResult.error);
+         }
+       }
  
        setApplications(prev =>
          prev.map(app =>
@@ -120,7 +170,7 @@
  
        toast({
          title: 'Status Updated',
-         description: `Candidate has been ${newStatus}`,
+         description: `Candidate has been ${newStatus}${['shortlisted', 'hired', 'rejected'].includes(newStatus) ? '. Email notification sent.' : ''}`,
        });
      } catch (error: any) {
        toast({
@@ -218,9 +268,21 @@
                  key={app.id}
                  candidate={app.candidate}
                 applicationStatus={app.status as 'applied' | 'reviewing' | 'shortlisted' | 'rejected' | 'hired'}
-                 onShortlist={() => updateApplicationStatus(app.id, 'shortlisted')}
-                 onHire={() => updateApplicationStatus(app.id, 'hired')}
-                 onReject={() => updateApplicationStatus(app.id, 'rejected')}
+                 onShortlist={() => updateApplicationStatus(app.id, 'shortlisted', {
+                   email: app.candidate.email,
+                   name: app.candidate.full_name,
+                   jobTitle: app.job.title,
+                 })}
+                 onHire={() => updateApplicationStatus(app.id, 'hired', {
+                   email: app.candidate.email,
+                   name: app.candidate.full_name,
+                   jobTitle: app.job.title,
+                 })}
+                 onReject={() => updateApplicationStatus(app.id, 'rejected', {
+                   email: app.candidate.email,
+                   name: app.candidate.full_name,
+                   jobTitle: app.job.title,
+                 })}
                />
              ))}
            </div>
