@@ -1,1 +1,4 @@
 project_id = "rihtqopeqnlyctxocidx"
+ 
+ [functions.send-candidate-email]
+ verify_jwt = false
