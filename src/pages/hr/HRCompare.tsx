@@ -104,10 +104,7 @@
        if (prev.includes(candidateId)) {
          return prev.filter(id => id !== candidateId);
        }
-       if (prev.length < 4) {
-         return [...prev, candidateId];
-       }
-       return prev;
+        return [...prev, candidateId];
      });
    };
  
@@ -157,10 +154,10 @@
      <DashboardLayout>
        <div className="space-y-6">
          <div>
-           <h1 className="text-2xl font-bold text-foreground">Compare Candidates</h1>
-           <p className="text-muted-foreground mt-1">
-             Select up to 4 candidates to compare side-by-side
-           </p>
+            <h1 className="text-2xl font-bold text-foreground">Compare Candidates</h1>
+            <p className="text-muted-foreground mt-1">
+              Select candidates to compare side-by-side
+            </p>
          </div>
  
          {/* Job Selection */}
@@ -199,9 +196,9 @@
            <>
              {/* Candidate Selection */}
              <div>
-               <h3 className="font-medium mb-3">
-                 Select candidates ({selectedCandidates.length}/4 selected)
-               </h3>
+                <h3 className="font-medium mb-3">
+                  Select candidates ({selectedCandidates.length} selected)
+                </h3>
                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                  {candidates.map((candidate) => (
                    <CandidateCard
