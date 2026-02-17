@@ -56,9 +56,10 @@
      location: string | null;
      skills: string[];
      experience_years: number;
-     bio: string | null;
-   };
-   job: {
+      bio: string | null;
+      resume_url: string | null;
+    };
+    job: {
      id: string;
      title: string;
    };
@@ -104,16 +105,17 @@
              status,
              cover_letter,
              created_at,
-             candidate:profiles!applications_candidate_id_fkey (
-               id,
-               full_name,
-               email,
-               phone,
-               location,
-               skills,
-               experience_years,
-               bio
-             ),
+      candidate:profiles!applications_candidate_id_fkey (
+                id,
+                full_name,
+                email,
+                phone,
+                location,
+                skills,
+                experience_years,
+                bio,
+                resume_url
+              ),
              job:jobs!applications_job_id_fkey (
                id,
                title

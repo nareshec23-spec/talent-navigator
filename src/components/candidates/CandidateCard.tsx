@@ -1,5 +1,5 @@
  import { motion } from 'framer-motion';
- import { MapPin, Briefcase, Mail, Phone, Check, X, Star } from 'lucide-react';
+ import { MapPin, Briefcase, Mail, Phone, Check, X, Star, FileDown } from 'lucide-react';
  import { Card, CardContent, CardHeader } from '@/components/ui/card';
  import { Button } from '@/components/ui/button';
  import { Badge } from '@/components/ui/badge';
@@ -17,9 +17,10 @@ type ApplicationStatus = 'applied' | 'reviewing' | 'shortlisted' | 'rejected' | 
      location?: string | null;
      skills: string[];
      experience_years: number;
-     bio?: string | null;
-   };
-  applicationStatus?: ApplicationStatus | string;
+      bio?: string | null;
+      resume_url?: string | null;
+    };
+   applicationStatus?: ApplicationStatus | string;
    onHire?: () => void;
    onReject?: () => void;
    onShortlist?: () => void;
@@ -133,8 +134,25 @@ const isValidStatus = (status: string | undefined): status is ApplicationStatus 
              )}
            </div>
  
-           {(onHire || onReject || onShortlist) && (
-             <div className="flex items-center gap-2 pt-4 border-t border-border">
+            {candidate.resume_url && (
+              <div className="flex items-center gap-2 mb-4">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(candidate.resume_url!, '_blank');
+                  }}
+                >
+                  <FileDown className="w-4 h-4 mr-1" />
+                  View Resume
+                </Button>
+              </div>
+            )}
+
+            {(onHire || onReject || onShortlist) && (
+              <div className="flex items-center gap-2 pt-4 border-t border-border">
                {onShortlist && applicationStatus !== 'shortlisted' && applicationStatus !== 'hired' && (
                  <Button 
                    size="sm" 
