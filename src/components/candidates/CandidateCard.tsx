@@ -1,10 +1,13 @@
- import { motion } from 'framer-motion';
- import { MapPin, Briefcase, Mail, Phone, Check, X, Star, FileDown } from 'lucide-react';
- import { Card, CardContent, CardHeader } from '@/components/ui/card';
- import { Button } from '@/components/ui/button';
- import { Badge } from '@/components/ui/badge';
- import { StatusBadge } from '@/components/ui/status-badge';
- import { Checkbox } from '@/components/ui/checkbox';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { MapPin, Briefcase, Mail, Phone, Check, X, Star, FileDown, Loader2 } from 'lucide-react';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
  
 type ApplicationStatus = 'applied' | 'reviewing' | 'shortlisted' | 'rejected' | 'hired';
 
@@ -33,6 +36,36 @@ type ApplicationStatus = 'applied' | 'reviewing' | 'shortlisted' | 'rejected' | 
 const isValidStatus = (status: string | undefined): status is ApplicationStatus => {
   return status !== undefined && ['applied', 'reviewing', 'shortlisted', 'rejected', 'hired'].includes(status);
 };
+
+function ResumeDownloadButton({ resumeUrl }: { resumeUrl: string }) {
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.storage
+        .from('resumes')
+        .createSignedUrl(resumeUrl, 300);
+      if (error) throw error;
+      window.open(data.signedUrl, '_blank');
+    } catch (err: any) {
+      toast({ title: 'Error', description: 'Failed to load resume. ' + (err.message || ''), variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2 mb-4">
+      <Button size="sm" variant="outline" className="w-full" onClick={handleDownload} disabled={loading}>
+        {loading ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <FileDown className="w-4 h-4 mr-1" />}
+        View Resume
+      </Button>
+    </div>
+  );
+}
 
  export function CandidateCard({ 
    candidate, 
@@ -135,20 +168,7 @@ const isValidStatus = (status: string | undefined): status is ApplicationStatus 
            </div>
  
             {candidate.resume_url && (
-              <div className="flex items-center gap-2 mb-4">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="w-full"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.open(candidate.resume_url!, '_blank');
-                  }}
-                >
-                  <FileDown className="w-4 h-4 mr-1" />
-                  View Resume
-                </Button>
-              </div>
+              <ResumeDownloadButton resumeUrl={candidate.resume_url} />
             )}
 
             {(onHire || onReject || onShortlist) && (
