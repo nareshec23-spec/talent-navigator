@@ -37,7 +37,23 @@ const isValidStatus = (status: string | undefined): status is ApplicationStatus 
   return status !== undefined && ['applied', 'reviewing', 'shortlisted', 'rejected', 'hired'].includes(status);
 };
 
-function ResumeDownloadButton({ resumeUrl }: { resumeUrl: string }) {
+function extractStoragePath(url: string): string {
+  // If it's a full URL, extract just the path after /resumes/
+  const marker = '/storage/v1/object/public/resumes/';
+  const idx = url.indexOf(marker);
+  if (idx !== -1) {
+    return url.substring(idx + marker.length);
+  }
+  // Also handle signed URL marker
+  const signedMarker = '/storage/v1/object/sign/resumes/';
+  const sIdx = url.indexOf(signedMarker);
+  if (sIdx !== -1) {
+    return url.substring(sIdx + signedMarker.length);
+  }
+  return url;
+}
+
+export function ResumeDownloadButton({ resumeUrl }: { resumeUrl: string }) {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
@@ -45,9 +61,10 @@ function ResumeDownloadButton({ resumeUrl }: { resumeUrl: string }) {
     e.stopPropagation();
     setLoading(true);
     try {
+      const path = extractStoragePath(resumeUrl);
       const { data, error } = await supabase.storage
         .from('resumes')
-        .createSignedUrl(resumeUrl, 300);
+        .createSignedUrl(path, 300);
       if (error) throw error;
       window.open(data.signedUrl, '_blank');
     } catch (err: any) {

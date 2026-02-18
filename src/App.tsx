@@ -11,6 +11,7 @@ import HRDashboard from "./pages/hr/HRDashboard";
 import HRJobs from "./pages/hr/HRJobs";
 import HRCandidates from "./pages/hr/HRCandidates";
 import HRCompare from "./pages/hr/HRCompare";
+import HRCandidateHistory from "./pages/hr/HRCandidateHistory";
 import HRSettings from "./pages/hr/HRSettings";
 import CandidateDashboard from "./pages/candidate/CandidateDashboard";
 import CandidateJobs from "./pages/candidate/CandidateJobs";
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/hr/jobs" element={<HRJobs />} />
             <Route path="/hr/candidates" element={<HRCandidates />} />
             <Route path="/hr/compare" element={<HRCompare />} />
+            <Route path="/hr/candidate-history" element={<HRCandidateHistory />} />
             <Route path="/hr/settings" element={<HRSettings />} />
             {/* Candidate Routes */}
             <Route path="/candidate" element={<CandidateDashboard />} />

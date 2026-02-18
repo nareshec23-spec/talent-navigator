@@ -27,6 +27,9 @@ interface Job {
   experience_max: number | null;
   is_active: boolean;
   created_at: string;
+  require_linkedin?: boolean;
+  require_github?: boolean;
+  require_leetcode?: boolean;
 }
 
 interface ApplyDialogProps {
@@ -52,12 +55,18 @@ export function ApplyDialog({ open, onOpenChange, job, onSuccess }: ApplyDialogP
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [applying, setApplying] = useState(false);
   const [validationIssues, setValidationIssues] = useState<ValidationIssue[]>([]);
+  const [linkedinUrl, setLinkedinUrl] = useState('');
+  const [githubUrl, setGithubUrl] = useState('');
+  const [leetcodeUrl, setLeetcodeUrl] = useState('');
 
   useEffect(() => {
     if (open && profile) {
       setSkills(profile.skills?.join(', ') || '');
       setExperienceYears(String(profile.experience_years || 0));
       setExperienceLevel(profile.experience_years && profile.experience_years > 0 ? 'experienced' : 'fresher');
+      setLinkedinUrl((profile as any)?.linkedin_url || '');
+      setGithubUrl((profile as any)?.github_url || '');
+      setLeetcodeUrl((profile as any)?.leetcode_url || '');
     }
   }, [open, profile]);
 
@@ -65,13 +74,12 @@ export function ApplyDialog({ open, onOpenChange, job, onSuccess }: ApplyDialogP
     if (open && job) {
       validateRequirements();
     }
-  }, [open, job, skills, experienceYears, experienceLevel]);
+  }, [open, job, skills, experienceYears, experienceLevel, linkedinUrl, githubUrl, leetcodeUrl]);
 
   const validateRequirements = () => {
     if (!job) return;
     const issues: ValidationIssue[] = [];
 
-    // Validate experience
     const years = parseInt(experienceYears) || 0;
     if (job.experience_min && years < job.experience_min) {
       issues.push({
@@ -86,7 +94,6 @@ export function ApplyDialog({ open, onOpenChange, job, onSuccess }: ApplyDialogP
       });
     }
 
-    // Validate skills
     const candidateSkills = skills.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
     if (job.required_skills && job.required_skills.length > 0) {
       const missingSkills = job.required_skills.filter(
@@ -100,6 +107,17 @@ export function ApplyDialog({ open, onOpenChange, job, onSuccess }: ApplyDialogP
       }
     }
 
+    // Validate required profile URLs
+    if (job.require_linkedin && !linkedinUrl.trim()) {
+      issues.push({ field: 'linkedin', message: 'LinkedIn profile URL is required for this job.' });
+    }
+    if (job.require_github && !githubUrl.trim()) {
+      issues.push({ field: 'github', message: 'GitHub profile URL is required for this job.' });
+    }
+    if (job.require_leetcode && !leetcodeUrl.trim()) {
+      issues.push({ field: 'leetcode', message: 'LeetCode profile URL is required for this job.' });
+    }
+
     setValidationIssues(issues);
   };
 
@@ -111,6 +129,9 @@ export function ApplyDialog({ open, onOpenChange, job, onSuccess }: ApplyDialogP
     setExperienceYears('');
     setResumeFile(null);
     setValidationIssues([]);
+    setLinkedinUrl('');
+    setGithubUrl('');
+    setLeetcodeUrl('');
   };
 
   const handleApply = async () => {
@@ -140,14 +161,17 @@ export function ApplyDialog({ open, onOpenChange, job, onSuccess }: ApplyDialogP
       // Get public URL
       const { data: urlData } = supabase.storage.from('resumes').getPublicUrl(filePath);
 
-      // Update profile with skills and experience
+      // Update profile with skills, experience, and profile URLs
       const skillsArray = skills.split(',').map(s => s.trim()).filter(Boolean);
       const yearsNum = parseInt(experienceYears) || 0;
       await supabase.from('profiles').update({
         skills: skillsArray,
         experience_years: yearsNum,
         resume_url: urlData.publicUrl,
-      }).eq('user_id', user.id);
+        linkedin_url: linkedinUrl || null,
+        github_url: githubUrl || null,
+        leetcode_url: leetcodeUrl || null,
+      } as any).eq('user_id', user.id);
 
       // Submit application
       const { error } = await supabase.from('applications').insert([{
@@ -174,6 +198,7 @@ export function ApplyDialog({ open, onOpenChange, job, onSuccess }: ApplyDialogP
   };
 
   const canApply = validationIssues.length === 0 && resumeFile !== null;
+  const hasRequiredUrls = job?.require_linkedin || job?.require_github || job?.require_leetcode;
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -261,6 +286,46 @@ export function ApplyDialog({ open, onOpenChange, job, onSuccess }: ApplyDialogP
               />
             </div>
           </div>
+
+          {/* Required Profile URLs */}
+          {hasRequiredUrls && (
+            <div className="space-y-3 border-t border-border pt-3">
+              <Label className="text-sm font-semibold">Required Profile Links</Label>
+              {job?.require_linkedin && (
+                <div className="space-y-1">
+                  <Label htmlFor="apply_linkedin" className="text-xs">LinkedIn URL *</Label>
+                  <Input
+                    id="apply_linkedin"
+                    value={linkedinUrl}
+                    onChange={(e) => setLinkedinUrl(e.target.value)}
+                    placeholder="https://linkedin.com/in/yourprofile"
+                  />
+                </div>
+              )}
+              {job?.require_github && (
+                <div className="space-y-1">
+                  <Label htmlFor="apply_github" className="text-xs">GitHub URL *</Label>
+                  <Input
+                    id="apply_github"
+                    value={githubUrl}
+                    onChange={(e) => setGithubUrl(e.target.value)}
+                    placeholder="https://github.com/yourusername"
+                  />
+                </div>
+              )}
+              {job?.require_leetcode && (
+                <div className="space-y-1">
+                  <Label htmlFor="apply_leetcode" className="text-xs">LeetCode URL *</Label>
+                  <Input
+                    id="apply_leetcode"
+                    value={leetcodeUrl}
+                    onChange={(e) => setLeetcodeUrl(e.target.value)}
+                    placeholder="https://leetcode.com/yourusername"
+                  />
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Resume Upload */}
           <div className="space-y-2">

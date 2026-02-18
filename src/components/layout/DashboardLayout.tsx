@@ -1,18 +1,19 @@
  import { ReactNode } from 'react';
  import { Link, useLocation, useNavigate } from 'react-router-dom';
  import { motion } from 'framer-motion';
- import { 
-   LayoutDashboard, 
-   Briefcase, 
-   Users, 
-   FileText, 
-   Settings, 
-   LogOut,
-   Search,
-   BarChart3,
-   Menu,
-   X
- } from 'lucide-react';
+  import { 
+    LayoutDashboard, 
+    Briefcase, 
+    Users, 
+    FileText, 
+    Settings, 
+    LogOut,
+    Search,
+    BarChart3,
+    History,
+    Menu,
+    X
+  } from 'lucide-react';
  import { Button } from '@/components/ui/button';
  import { useAuth } from '@/hooks/useAuth';
  import { useState } from 'react';
@@ -22,13 +23,14 @@
    children: ReactNode;
  }
  
- const hrNavItems = [
-   { icon: LayoutDashboard, label: 'Dashboard', href: '/hr' },
-   { icon: Briefcase, label: 'Jobs', href: '/hr/jobs' },
-   { icon: Users, label: 'Candidates', href: '/hr/candidates' },
-   { icon: BarChart3, label: 'Compare', href: '/hr/compare' },
-   { icon: Settings, label: 'Settings', href: '/hr/settings' },
- ];
+  const hrNavItems = [
+    { icon: LayoutDashboard, label: 'Dashboard', href: '/hr' },
+    { icon: Briefcase, label: 'Jobs', href: '/hr/jobs' },
+    { icon: Users, label: 'Candidates', href: '/hr/candidates' },
+    { icon: BarChart3, label: 'Compare', href: '/hr/compare' },
+    { icon: History, label: 'History', href: '/hr/candidate-history' },
+    { icon: Settings, label: 'Settings', href: '/hr/settings' },
+  ];
  
  const candidateNavItems = [
    { icon: LayoutDashboard, label: 'Dashboard', href: '/candidate' },
