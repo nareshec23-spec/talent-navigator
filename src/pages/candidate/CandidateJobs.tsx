@@ -24,6 +24,9 @@ interface Job {
   experience_max: number | null;
   is_active: boolean;
   created_at: string;
+  require_linkedin?: boolean;
+  require_github?: boolean;
+  require_leetcode?: boolean;
 }
 
 export default function CandidateJobs() {

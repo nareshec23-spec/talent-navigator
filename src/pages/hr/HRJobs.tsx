@@ -1,6 +1,7 @@
- import { useEffect, useState } from 'react';
- import { motion } from 'framer-motion';
- import { Plus, Search, Filter } from 'lucide-react';
+  import { useEffect, useState } from 'react';
+  import { motion } from 'framer-motion';
+  import { Plus, Search, Filter } from 'lucide-react';
+  import { Checkbox } from '@/components/ui/checkbox';
  import { Button } from '@/components/ui/button';
  import { Input } from '@/components/ui/input';
  import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -43,18 +44,21 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
   const [isDeleting, setIsDeleting] = useState(false);
    
    // Form state
-   const [formData, setFormData] = useState({
-     title: '',
-     description: '',
-     employment_type: 'full_time',
-     location_type: 'remote',
-     location_details: '',
-     salary_min: '',
-     salary_max: '',
-     required_skills: '',
-     experience_min: '0',
-     experience_max: '',
-   });
+    const [formData, setFormData] = useState({
+      title: '',
+      description: '',
+      employment_type: 'full_time',
+      location_type: 'remote',
+      location_details: '',
+      salary_min: '',
+      salary_max: '',
+      required_skills: '',
+      experience_min: '0',
+      experience_max: '',
+      require_linkedin: false,
+      require_leetcode: false,
+      require_github: false,
+    });
  
    useEffect(() => {
      if (profile?.id) {
@@ -88,36 +92,42 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
          .map(s => s.trim())
          .filter(s => s.length > 0);
  
-      const { error } = await supabase.from('jobs').insert([{
-         hr_id: profile!.id,
-         title: formData.title,
-         description: formData.description,
-        employment_type: formData.employment_type as 'full_time' | 'part_time' | 'contract' | 'internship',
-        location_type: formData.location_type as 'remote' | 'india' | 'abroad' | 'hybrid',
-         location_details: formData.location_details || null,
-         salary_min: formData.salary_min ? parseInt(formData.salary_min) : null,
-         salary_max: formData.salary_max ? parseInt(formData.salary_max) : null,
-         required_skills: skillsArray,
-         experience_min: parseInt(formData.experience_min),
-         experience_max: formData.experience_max ? parseInt(formData.experience_max) : null,
-      }]);
+       const { error } = await supabase.from('jobs').insert([{
+          hr_id: profile!.id,
+          title: formData.title,
+          description: formData.description,
+         employment_type: formData.employment_type as 'full_time' | 'part_time' | 'contract' | 'internship',
+         location_type: formData.location_type as 'remote' | 'india' | 'abroad' | 'hybrid',
+          location_details: formData.location_details || null,
+          salary_min: formData.salary_min ? parseInt(formData.salary_min) : null,
+          salary_max: formData.salary_max ? parseInt(formData.salary_max) : null,
+          required_skills: skillsArray,
+          experience_min: parseInt(formData.experience_min),
+          experience_max: formData.experience_max ? parseInt(formData.experience_max) : null,
+          require_linkedin: formData.require_linkedin,
+          require_leetcode: formData.require_leetcode,
+          require_github: formData.require_github,
+       } as any]);
  
        if (error) throw error;
  
        toast({ title: 'Success', description: 'Job posted successfully!' });
        setIsCreateOpen(false);
-       setFormData({
-         title: '',
-         description: '',
-         employment_type: 'full_time',
-         location_type: 'remote',
-         location_details: '',
-         salary_min: '',
-         salary_max: '',
-         required_skills: '',
-         experience_min: '0',
-         experience_max: '',
-       });
+        setFormData({
+          title: '',
+          description: '',
+          employment_type: 'full_time',
+          location_type: 'remote',
+          location_details: '',
+          salary_min: '',
+          salary_max: '',
+          required_skills: '',
+          experience_min: '0',
+          experience_max: '',
+          require_linkedin: false,
+          require_leetcode: false,
+          require_github: false,
+        });
        fetchJobs();
      } catch (error: any) {
        toast({
@@ -304,9 +314,38 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
                        placeholder="Optional"
                      />
                    </div>
-                 </div>
- 
-                 <div className="flex justify-end gap-3 pt-4">
+                  </div>
+
+                  {/* Required Profile URLs */}
+                  <div className="space-y-3 pt-2 border-t border-border">
+                    <Label className="text-sm font-semibold">Required Candidate Profile Links</Label>
+                    <p className="text-xs text-muted-foreground">Candidates must provide these when applying</p>
+                    <div className="flex flex-col gap-2">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <Checkbox
+                          checked={formData.require_linkedin}
+                          onCheckedChange={(checked) => setFormData({ ...formData, require_linkedin: !!checked })}
+                        />
+                        <span className="text-sm">LinkedIn Profile</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <Checkbox
+                          checked={formData.require_github}
+                          onCheckedChange={(checked) => setFormData({ ...formData, require_github: !!checked })}
+                        />
+                        <span className="text-sm">GitHub Profile</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <Checkbox
+                          checked={formData.require_leetcode}
+                          onCheckedChange={(checked) => setFormData({ ...formData, require_leetcode: !!checked })}
+                        />
+                        <span className="text-sm">LeetCode Profile</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-3 pt-4">
                    <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)}>
                      Cancel
                    </Button>

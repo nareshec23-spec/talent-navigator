@@ -74,6 +74,9 @@ export type Database = {
           is_active: boolean | null
           location_details: string | null
           location_type: Database["public"]["Enums"]["location_type"]
+          require_github: boolean | null
+          require_leetcode: boolean | null
+          require_linkedin: boolean | null
           required_skills: string[] | null
           requirements: string[] | null
           salary_max: number | null
@@ -92,6 +95,9 @@ export type Database = {
           is_active?: boolean | null
           location_details?: string | null
           location_type?: Database["public"]["Enums"]["location_type"]
+          require_github?: boolean | null
+          require_leetcode?: boolean | null
+          require_linkedin?: boolean | null
           required_skills?: string[] | null
           requirements?: string[] | null
           salary_max?: number | null
@@ -110,6 +116,9 @@ export type Database = {
           is_active?: boolean | null
           location_details?: string | null
           location_type?: Database["public"]["Enums"]["location_type"]
+          require_github?: boolean | null
+          require_leetcode?: boolean | null
+          require_linkedin?: boolean | null
           required_skills?: string[] | null
           requirements?: string[] | null
           salary_max?: number | null
@@ -137,7 +146,10 @@ export type Database = {
           email: string
           experience_years: number | null
           full_name: string
+          github_url: string | null
           id: string
+          leetcode_url: string | null
+          linkedin_url: string | null
           location: string | null
           phone: string | null
           resume_url: string | null
@@ -155,7 +167,10 @@ export type Database = {
           email: string
           experience_years?: number | null
           full_name: string
+          github_url?: string | null
           id?: string
+          leetcode_url?: string | null
+          linkedin_url?: string | null
           location?: string | null
           phone?: string | null
           resume_url?: string | null
@@ -173,7 +188,10 @@ export type Database = {
           email?: string
           experience_years?: number | null
           full_name?: string
+          github_url?: string | null
           id?: string
+          leetcode_url?: string | null
+          linkedin_url?: string | null
           location?: string | null
           phone?: string | null
           resume_url?: string | null
