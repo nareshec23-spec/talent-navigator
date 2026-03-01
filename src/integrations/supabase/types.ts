@@ -22,6 +22,7 @@ export type Database = {
           hr_notes: string | null
           id: string
           job_id: string
+          joining_date: string | null
           status: Database["public"]["Enums"]["application_status"]
           updated_at: string
         }
@@ -32,6 +33,7 @@ export type Database = {
           hr_notes?: string | null
           id?: string
           job_id: string
+          joining_date?: string | null
           status?: Database["public"]["Enums"]["application_status"]
           updated_at?: string
         }
@@ -42,6 +44,7 @@ export type Database = {
           hr_notes?: string | null
           id?: string
           job_id?: string
+          joining_date?: string | null
           status?: Database["public"]["Enums"]["application_status"]
           updated_at?: string
         }
@@ -64,6 +67,7 @@ export type Database = {
       }
       jobs: {
         Row: {
+          company_website_url: string | null
           created_at: string
           description: string
           employment_type: Database["public"]["Enums"]["employment_type"]
@@ -74,6 +78,7 @@ export type Database = {
           is_active: boolean | null
           location_details: string | null
           location_type: Database["public"]["Enums"]["location_type"]
+          registration_deadline: string | null
           require_github: boolean | null
           require_leetcode: boolean | null
           require_linkedin: boolean | null
@@ -85,6 +90,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          company_website_url?: string | null
           created_at?: string
           description: string
           employment_type?: Database["public"]["Enums"]["employment_type"]
@@ -95,6 +101,7 @@ export type Database = {
           is_active?: boolean | null
           location_details?: string | null
           location_type?: Database["public"]["Enums"]["location_type"]
+          registration_deadline?: string | null
           require_github?: boolean | null
           require_leetcode?: boolean | null
           require_linkedin?: boolean | null
@@ -106,6 +113,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          company_website_url?: string | null
           created_at?: string
           description?: string
           employment_type?: Database["public"]["Enums"]["employment_type"]
@@ -116,6 +124,7 @@ export type Database = {
           is_active?: boolean | null
           location_details?: string | null
           location_type?: Database["public"]["Enums"]["location_type"]
+          registration_deadline?: string | null
           require_github?: boolean | null
           require_leetcode?: boolean | null
           require_linkedin?: boolean | null
