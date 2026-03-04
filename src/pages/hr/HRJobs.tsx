@@ -54,6 +54,7 @@ const defaultForm = {
   experience_min: '0',
   experience_max: '',
   company_website_url: '',
+  company_name: '',
   require_linkedin: false,
   require_leetcode: false,
   require_github: false,
@@ -106,6 +107,7 @@ export default function HRJobs() {
       experience_min: job.experience_min?.toString() || '0',
       experience_max: job.experience_max?.toString() || '',
       company_website_url: job.company_website_url || '',
+      company_name: (job as any).company_name || '',
       require_linkedin: job.require_linkedin || false,
       require_leetcode: job.require_leetcode || false,
       require_github: job.require_github || false,
@@ -134,6 +136,7 @@ export default function HRJobs() {
       experience_min: parseInt(formData.experience_min) || 0,
       experience_max: formData.experience_max ? parseInt(formData.experience_max) : null,
       company_website_url: formData.company_website_url || null,
+      company_name: formData.company_name || null,
       registration_deadline: registrationDeadline ? registrationDeadline.toISOString() : null,
       require_linkedin: formData.require_linkedin,
       require_leetcode: formData.require_leetcode,
@@ -189,6 +192,11 @@ export default function HRJobs() {
       <div className="space-y-2">
         <Label htmlFor="title">Job Title</Label>
         <Input id="title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder="e.g. Senior Software Engineer" required />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="company_name">Company Name</Label>
+        <Input id="company_name" value={formData.company_name} onChange={(e) => setFormData({ ...formData, company_name: e.target.value })} placeholder="e.g. Acme Corp" />
       </div>
 
       <div className="space-y-2">
