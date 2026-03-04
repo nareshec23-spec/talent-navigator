@@ -67,6 +67,7 @@ export type Database = {
       }
       jobs: {
         Row: {
+          company_name: string | null
           company_website_url: string | null
           created_at: string
           description: string
@@ -90,6 +91,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          company_name?: string | null
           company_website_url?: string | null
           created_at?: string
           description: string
@@ -113,6 +115,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          company_name?: string | null
           company_website_url?: string | null
           created_at?: string
           description?: string
